@@ -1,0 +1,12 @@
+[submodule "happypose"]
+	path = happypose
+	url = git@github.com:adettori/happypose.git
+[submodule "FoundationPose"]
+	path = FoundationPose
+	url = git@github.com:adettori/FoundationPose.git
+[submodule "gigapose"]
+	path = gigapose
+	url = git@github.com:adettori/gigapose.git
+[submodule "clean-pvnet"]
+	path = clean-pvnet
+	url = git@github.com:adettori/clean-pvnet.git
