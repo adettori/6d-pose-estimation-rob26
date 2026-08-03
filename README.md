@@ -12,7 +12,7 @@ Following are some notes on working with the corresponding methods
 The initial repo did not work for my setup since I needed a way to abstract from my machine cuda version, the best solution seemed to dockerize the software.
 During the dockerization process some issues popped up, in particular:
 - Needed to fix some dependency specifications in pyproject.yml (a753b69)
-- Fix bug where rotation matrix used in megapose was not loaded in the same device as the input rendered images (9311f52)
+- Fix bug where rotation matrix used in megapose was not loaded in the same device as the input rendered images (75abbbc)
 - Need to specify weights_only=False in new versions of torch when using torch.load() for megapose to work as expected (9311f52)
 - Some parts of the mirrors for the BOP dataset used in the download script were no longer available, in these cases the instructions were updated to use the huggingface cmd utility to download the dataset (7cdebad)
 
