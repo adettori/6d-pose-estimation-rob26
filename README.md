@@ -2,7 +2,7 @@
 A repo linking together the various methods explored for a Robotics project having as subject 6d pose estimation.
 Use the following command to init all submodules:
 ```
-git clone --recursive
+git clone --recursive *github link*
 ```
 
 ## Observations
@@ -15,11 +15,20 @@ During the dockerization process some issues popped up, in particular:
 - Fix bug where rotation matrix used in megapose was not loaded in the same device as the input rendered images (75abbbc)
 - Need to specify weights_only=False in new versions of torch when using torch.load() for megapose to work as expected (9311f52)
 - Some parts of the mirrors for the BOP dataset used in the download script were no longer available, in these cases the instructions were updated to use the huggingface cmd utility to download the dataset (7cdebad)
+- There was no way to run the methods on linemod without adding configs for which detectors to use (85e568a)
 
 ## Inference
-Here are the instructions to reproduce the inference steps using both sub-packages of HappyPose
 
-### CosyPose (HappyPose)
+### HappyPose
+Here are the instructions to reproduce the inference steps using both sub-packages of HappyPose.
+To run the methods on single images, some example folders have been setup in the examples/ dir.
+
+Note that the results are saved in the target example's folder.
+Note that the resulting output is formatted as a list of couples consisting of a quaternion and a translation vector.
+To convert from quaternions to rotation matrix for metric calculations, the function `compute_rotation_matrix_from_quaternions` in `happypose/toolbox/lib3d/rotations.py` can be used.
+There doesn't seem to be any direct way to compute ADD/ADD-S metrics from examples currently.
+
+#### CosyPose
 ```
 # download pretrained linemod detector weights
 python -m happypose.toolbox.utils.download --cosypose_models\
@@ -42,7 +51,7 @@ python -m happypose.pose_estimators.cosypose.cosypose.scripts.run_inference_on_e
 # the results will be in dataset/examples/eggs/visualizations
 ```
 
-### MegaPose (HappyPose)
+#### MegaPose
 ```
 
 # download all megapose model weights
@@ -61,6 +70,21 @@ cp -r examples/eggs dataset/examples/
 # run example
 python -m happypose.pose_estimators.megapose.scripts.run_inference_on_example eggs --run-inference --run-detections --vis-detections --vis-poses --detector detector-bop-lmo-pbr--517542
 # the results will be in dataset/examples/eggs/visualizations
+```
+
+## Datasets
+Some commands to download the parts of the datasets needed for evaluation.
+
+### Linemod
+```
+hf download bop-benchmark/lm \
+            --local-dir ./dataset/bop_datasets/lm \
+            --repo-type=dataset \
+            lm_base.zip lm_models.zip lm_test_all.zip
+cd ./dataset/bop_datasets/lm
+7z e lm_base.zip
+7z x lm_models.zip 
+7z x lm_test_all.zip
 ```
 
 ## Evaluation (bop-toolkit)
