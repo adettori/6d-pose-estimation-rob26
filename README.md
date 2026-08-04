@@ -21,6 +21,12 @@ Here are the instructions to reproduce the inference steps using both sub-packag
 
 ### CosyPose (HappyPose)
 ```
+# download pretrained linemod detector weights
+python -m happypose.toolbox.utils.download --cosypose_models\
+    detector-bop-lmo-pbr--517542 \
+    coarse-bop-lmo-pbr--707448 \
+    refiner-bop-lmo-pbr--325214
+
 # download ycbv model weights
 python -m happypose.toolbox.utils.download --cosypose_models \
           detector-bop-ycbv-pbr--970850 \
@@ -32,24 +38,28 @@ python -m happypose.toolbox.utils.download --cosypose_models \
 cp -r examples/eggs dataset/examples/
 
 # run example
-python -m happypose.pose_estimators.cosypose.cosypose.scripts.run_inference_on_example eggs --dataset ycbv --run-inference --run-detections --vis-detections --vis-poses
+python -m happypose.pose_estimators.cosypose.cosypose.scripts.run_inference_on_example eggs --dataset lmo --run-inference --run-detections --vis-detections --vis-poses
 # the results will be in dataset/examples/eggs/visualizations
 ```
 
 ### MegaPose (HappyPose)
 ```
+
 # download all megapose model weights
 python -m happypose.toolbox.utils.download --megapose_models
 
-# download pretrained ycbv detection model weights
+# download pretrained ycbv detector weights
 python -m happypose.toolbox.utils.download --cosypose_models detector-bop-ycbv-pbr--970850
+
+# download pretrained linemod detector weights
+python -m happypose.toolbox.utils.download --cosypose_models detector-bop-lmo-pbr--517542
 
 # move linemod example into dataset folder
 # bop toolkit info used to build example: https://github.com/thodan/bop_toolkit/blob/main/docs/bop_datasets_format.md
 cp -r examples/eggs dataset/examples/
 
 # run example
-python -m happypose.pose_estimators.megapose.scripts.run_inference_on_example eggs --run-inference --run-detections --vis-detections --vis-poses
+python -m happypose.pose_estimators.megapose.scripts.run_inference_on_example eggs --run-inference --run-detections --vis-detections --vis-poses --detector detector-bop-lmo-pbr--517542
 # the results will be in dataset/examples/eggs/visualizations
 ```
 
