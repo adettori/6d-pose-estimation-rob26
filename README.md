@@ -23,10 +23,11 @@ During the dockerization process some issues popped up, in particular:
 Here are the instructions to reproduce the inference steps using both sub-packages of HappyPose.
 To run the methods on single images, some example folders have been setup in the examples/ dir.
 
-Note that the results are saved in the target example's folder.
-Note that the resulting output is formatted as a list of couples consisting of a quaternion and a translation vector.
+Note:
+- the results are saved in the target example's folder
+- the resulting output is formatted as a list of couples consisting of a quaternion and a translation vector
 To convert from quaternions to rotation matrix for metric calculations, the function `compute_rotation_matrix_from_quaternions` in `happypose/toolbox/lib3d/rotations.py` can be used.
-There doesn't seem to be any direct way to compute ADD/ADD-S metrics from examples currently.
+There doesn't seem to be any direct way to compute ADD/ADD-S metrics from examples currently, for that keep only the desidered test images in the dataset folder and the corresponding entries inside test_targets_bop19.json
 
 #### CosyPose
 ```
@@ -47,15 +48,19 @@ python -m happypose.toolbox.utils.download --cosypose_models \
 cp -r examples/eggs dataset/examples/
 
 # run example
-python -m happypose.pose_estimators.cosypose.cosypose.scripts.run_inference_on_example eggs --dataset lmo --run-inference --run-detections --vis-detections --vis-poses
+python -m happypose.pose_estimators.cosypose.cosypose.scripts.run_inference_on_example eggs --dataset lm --run-inference --run-detections --vis-detections --vis-poses
 # the results will be in dataset/examples/eggs/visualizations
+
+# run method on lm/lmo dataset, results are in dataset/results/lm-debug
+python -m happypose.pose_estimators.cosypose.cosypose.scripts.run_full_cosypose_eval_new detector_run_id=bop_pbr coarse_run_id=coarse-bop-ycbv-pbr--724183 refiner_run_id=refiner-bop-ycbv-pbr--604090 ds_names=["lm.bop19"] result_id=lm-debug detection_coarse_types=["detector"] inference.renderer=panda3d inference.n_workers=4
 ```
 
 #### MegaPose
 ```
 
-# download all megapose model weights
+# download all megapose model weights and move them to the correct folder
 python -m happypose.toolbox.utils.download --megapose_models
+cp ./dataset/megapose-models/* ./dataset/experiments/
 
 # download pretrained ycbv detector weights
 python -m happypose.toolbox.utils.download --cosypose_models detector-bop-ycbv-pbr--970850
@@ -70,6 +75,10 @@ cp -r examples/eggs dataset/examples/
 # run example
 python -m happypose.pose_estimators.megapose.scripts.run_inference_on_example eggs --run-inference --run-detections --vis-detections --vis-poses --detector detector-bop-lmo-pbr--517542
 # the results will be in dataset/examples/eggs/visualizations
+
+# run method on lm/lmo dataset, results are in dataset/results/lm-debug
+python -m happypose.pose_estimators.megapose.scripts.run_full_megapose_eval detector_run_id=bop_pbr coarse_run_id=coarse-rgb-906902141 refiner_run_id=refiner-rgb-653307694 ds_names=[lm.bop19] result_id=detector_1posehyp detection_coarse_types=[["detector","SO3_grid"]] inference.n_pose_hypotheses=1 skip_inference=false run_bop_eval=true
+
 ```
 
 ## Datasets
@@ -77,10 +86,12 @@ Some commands to download the parts of the datasets needed for evaluation.
 
 ### Linemod
 ```
+# download dataset
 hf download bop-benchmark/lm \
             --local-dir ./dataset/bop_datasets/lm \
             --repo-type=dataset \
             lm_base.zip lm_models.zip lm_test_all.zip
+mv ./dataset/bop_datasets/lm ./dataset/bop_datasets/lmo
 cd ./dataset/bop_datasets/lm
 7z e lm_base.zip
 7z x lm_models.zip 
