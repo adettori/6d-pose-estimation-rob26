@@ -16,6 +16,13 @@ During the dockerization process some issues popped up, in particular:
 - Need to specify weights_only=False in new versions of torch when using torch.load() for megapose to work as expected (9311f52)
 - Some parts of the mirrors for the BOP dataset used in the download script were no longer available, in these cases the instructions were updated to use the huggingface cmd utility to download the dataset (7cdebad)
 - There was no way to run the methods on linemod without adding configs for which detectors to use (85e568a)
+- Some issues in the config of folders containing the lm dataset, fixed by adding explicit parameters for it (ea68991)
+
+### PVNet
+The main issues with this method are related to the fact that it's old and no longer maintained. 
+Although there already was a docker configuration setup to allow for easy usage, the image on which it relied (old version of nvidia/cuda) was no longer available due to deprecation.
+The base image has therefore been changed to a relatively similar pytorch one.
+After many trials a mixture of pip and apt has been used to replicate the original environment with success.
 
 ## Inference
 
@@ -79,6 +86,15 @@ python -m happypose.pose_estimators.megapose.scripts.run_inference_on_example eg
 # run method on lm/lmo dataset, results are in dataset/results/lm-debug
 python -m happypose.pose_estimators.megapose.scripts.run_full_megapose_eval detector_run_id=bop_pbr coarse_run_id=coarse-rgb-906902141 refiner_run_id=refiner-rgb-653307694 ds_names=[lm.bop19] result_id=detector_1posehyp detection_coarse_types=[["detector","SO3_grid"]] inference.n_pose_hypotheses=1 skip_inference=false run_bop_eval=true
 
+```
+
+## PVNet
+The use of docker is recommended for this method, follow the README inside docker/.
+Follow the README instructions in the clean-pvnet repo, starting from the *Testing* section, to set it up and run the commands inside the docker/environment.
+
+```bash
+# Test if it's working 
+python run.py --type evaluate --cfg_file configs/linemod.yaml model cat cls_type cat
 ```
 
 ## Datasets
