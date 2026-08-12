@@ -24,6 +24,12 @@ Although there already was a docker configuration setup to allow for easy usage,
 The base image has therefore been changed to a relatively similar pytorch one.
 After many trials a mixture of pip and apt has been used to replicate the original environment with success.
 
+### GigaPose
+The original repo lacked support for Docker, but luckily this time another [developer](https://github.com/TomusTurmus/gigapose) wrote one and made it available on github, therefore the changes required to the code were limited to get everything working, mainly tweaking the download and extraction utilities for the datasets.
+
+### FoundationPose
+No issues with this method, probably due to how recent it is, everything just worked following the instructions in the repo.
+
 ## Inference
 
 ### HappyPose
@@ -96,6 +102,47 @@ Follow the README instructions in the clean-pvnet repo, starting from the *Testi
 # Test if it's working 
 python run.py --type evaluate --cfg_file configs/linemod.yaml model cat cls_type cat
 ```
+Note: this method already gives some metrics as results, including ADD and projection error.
+
+## GigaPose
+To run via Docker:
+```
+# Run the following inside docker/
+docker compose up
+# Run from another terminal
+docker attach docker-gigapose-1
+```
+
+Download the ML models:
+```
+python -m src.scripts.download_default_detections
+python -m src.scripts.download_gigapose
+python -m src.scripts.download_megapose
+```
+
+Download a dataset and render the templates as following:
+```
+export DATASET_NAME=hope
+python -m src.scripts.download_test_bop24 test_dataset_name=$DATASET_NAME
+python -m src.scripts.render_bop_templates test_dataset_name=$DATASET_NAME
+```
+
+Run the method:
+```
+python test.py test_dataset_name=hope run_id=$NAME_RUN test_setting=detection
+python refine.py test_dataset_name=hope run_id=$NAME_RUN test_setting=detection
+```
+
+Evaluate the results:
+```
+export INPUT_DIR=gigaPose_datasets/results/large_myrun/predictions
+export FILE_NAME=large-pbrreal-rgb-mmodel_hope-test_myrun.csv
+# From the root of the bop_toolkit installed in the environment
+python scripts/eval_bop24_pose.py --results_path $INPUT_DIR --eval_path $INPUT_DIR --result_filenames=$FILE_NAME
+```
+
+## FoundationPose
+Follow the original repo's instructions.
 
 ## Datasets
 Some commands to download the parts of the datasets needed for evaluation.
@@ -124,5 +171,5 @@ python eval_calc_errors.py --error_type adi --result_filenames relative/path/to/
 
 After computing the errors, use this to compute the scores:
 ```
-python /happypose/.venv/bin/eval_calc_scores.py --error_dir_paths comma/separated/list/of/relative/paths
+python /path/to/bop-toolkit/eval_calc_scores.py --error_dir_paths comma/separated/list/of/relative/paths
 ```
