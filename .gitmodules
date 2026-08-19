@@ -10,3 +10,6 @@
 [submodule "clean-pvnet"]
 	path = clean-pvnet
 	url = git@github.com:adettori/clean-pvnet.git
+[submodule "rgbd-pipeline"]
+	path = rgbd-pipeline
+	url = git@github.com:adettori/rgbd-pipeline.git
