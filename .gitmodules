@@ -13,3 +13,6 @@
 [submodule "rgbd-pipeline"]
 	path = rgbd-pipeline
 	url = git@github.com:adettori/rgbd-pipeline.git
+[submodule "BundleSDF"]
+	path = BundleSDF
+	url = git@github.com:adettori/BundleSDF.git
